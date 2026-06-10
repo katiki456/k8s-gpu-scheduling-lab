@@ -35,6 +35,10 @@ The lab in action — both simulated A100s claimed, and KEDA scaling the inferen
 
 ![GPU Scheduling Lab Grafana dashboard](docs/dashboard.png)
 
+The 1-hour view makes the scheduling story easy to read: GPU utilization jumps when the inference pods land on the GPU pool (~19:00), and the replica step from KEDA follows right after:
+
+![GPU Scheduling Lab — 1 hour view](docs/dashboard-1h.png)
+
 ## Two modes
 
 | Mode | GPU | Use case |
