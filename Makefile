@@ -26,6 +26,7 @@ monitoring:  ## Install kube-prometheus-stack + GPU dashboard
 	$(KUBECTL) -n monitoring create configmap gpu-lab-dashboard \
 		--from-file=dashboards/gpu-lab-dashboard.json \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
+	$(KUBECTL) apply -f manifests/monitoring/dcgm-servicemonitor.yaml
 
 keda:  ## Install KEDA
 	$(HELM) upgrade -i keda keda \

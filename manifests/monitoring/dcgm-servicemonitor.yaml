@@ -1,0 +1,18 @@
+# Tell Prometheus to scrape the DCGM exporter (real or fake — the service
+# shape is identical). Per-GPU metrics like DCGM_FI_DEV_GPU_UTIL and
+# DCGM_FI_DEV_FB_USED land in Prometheus and drive both the Grafana
+# dashboard and the KEDA scaler.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nvidia-dcgm-exporter
+  namespace: gpu-operator
+  labels:
+    app: nvidia-dcgm-exporter
+spec:
+  selector:
+    matchLabels:
+      app: nvidia-dcgm-exporter
+  endpoints:
+    - port: gpu-metrics
+      interval: 15s
