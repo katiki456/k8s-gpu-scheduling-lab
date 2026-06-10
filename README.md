@@ -31,13 +31,9 @@ flowchart LR
 
 ## What it looks like
 
-The lab in action — both simulated A100s claimed, and KEDA scaling the inference deployment from 1 to 2 replicas (bottom-left panel) after average GPU utilization crossed the 60% trigger threshold:
+The lab in action — GPU utilization jumps when the inference pods land on the GPU pool (~19:00), and KEDA scales the deployment from 1 to 2 replicas right after (bottom-left panel), once average utilization crossed the 60% trigger threshold. Both simulated A100s end up claimed:
 
-![GPU Scheduling Lab Grafana dashboard](docs/dashboard.png)
-
-The 1-hour view makes the scheduling story easy to read: GPU utilization jumps when the inference pods land on the GPU pool (~19:00), and the replica step from KEDA follows right after:
-
-![GPU Scheduling Lab — 1 hour view](docs/dashboard-1h.png)
+![GPU Scheduling Lab Grafana dashboard](docs/dashboard-1h.png)
 
 ## Two modes
 
