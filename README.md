@@ -29,6 +29,12 @@ flowchart LR
     CLIENT[OpenAI-compatible client] -->|HTTP :8000| VLLM
 ```
 
+## What it looks like
+
+The lab in action — both simulated A100s claimed, and KEDA scaling the inference deployment from 1 to 2 replicas (bottom-left panel) after average GPU utilization crossed the 60% trigger threshold:
+
+![GPU Scheduling Lab Grafana dashboard](docs/dashboard.png)
+
 ## Two modes
 
 | Mode | GPU | Use case |
