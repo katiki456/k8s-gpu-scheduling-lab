@@ -1,0 +1,15 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: gpu-lab
+nodes:
+  - role: control-plane
+  - role: worker
+    labels:
+      node-pool: general
+  # "GPU" worker — fake-gpu-operator attaches simulated GPUs to nodes
+  # carrying this label, mirroring how a real GPU pool is labeled.
+  - role: worker
+    labels:
+      node-pool: gpu
+      run.ai/simulated-gpu-node-pool: default
+      nvidia.com/gpu.present: "true"

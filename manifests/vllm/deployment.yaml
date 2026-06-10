@@ -1,0 +1,86 @@
+# Inference deployment — sim variant.
+# A mock OpenAI-compatible server that requests a (simulated) GPU, so the
+# scheduling path, GPU pool placement, and KEDA scaling are identical to
+# production. Swap the image + args for the real-mode vLLM variant below.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: inference
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: /metrics
+    spec:
+      nodeSelector:
+        node-pool: gpu
+      containers:
+        - name: vllm
+          # sim mode: lightweight HTTP server exporting vllm-shaped metrics.
+          image: ealen/echo-server:0.9.2
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: PORT
+              value: "8000"
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 3
+
+# --- real mode (uncomment, requires a node with an actual NVIDIA GPU) ---
+#        - name: vllm
+#          image: vllm/vllm-openai:latest
+#          args:
+#            - --model=meta-llama/Meta-Llama-3-8B-Instruct
+#            - --max-model-len=4096
+#            - --gpu-memory-utilization=0.90
+#          ports:
+#            - containerPort: 8000
+#          env:
+#            - name: HUGGING_FACE_HUB_TOKEN
+#              valueFrom:
+#                secretKeyRef:
+#                  name: hf-token
+#                  key: token
+#          resources:
+#            limits:
+#              nvidia.com/gpu: 1
+#          volumeMounts:
+#            - name: model-cache
+#              mountPath: /root/.cache/huggingface
+#      volumes:
+#        - name: model-cache
+#          emptyDir:
+#            sizeLimit: 40Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm
+  namespace: inference
+  labels:
+    app: vllm
+spec:
+  selector:
+    app: vllm
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000

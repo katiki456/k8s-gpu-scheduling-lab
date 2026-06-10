@@ -1,0 +1,10 @@
+# Values for run.ai fake-gpu-operator (sim mode).
+# Simulates NVIDIA GPUs on labeled nodes: fake device plugin advertises
+# nvidia.com/gpu capacity, and a fake DCGM exporter emits per-GPU metrics
+# (utilization, memory) that Prometheus scrapes like the real thing.
+topology:
+  # Every node labeled run.ai/simulated-gpu-node-pool=default gets this profile.
+  nodePools:
+    default:
+      gpuProduct: Tesla-A100-SXM4-40GB
+      gpuCount: 2

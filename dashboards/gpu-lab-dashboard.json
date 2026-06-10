@@ -1,0 +1,95 @@
+{
+  "title": "GPU Scheduling Lab",
+  "uid": "gpu-lab",
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "GPU Utilization by GPU",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "percent", "max": 100, "min": 0 } },
+      "targets": [
+        {
+          "expr": "DCGM_FI_DEV_GPU_UTIL",
+          "legendFormat": "{{node}} gpu{{gpu}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "GPU Memory Used",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "decmbytes" } },
+      "targets": [
+        {
+          "expr": "DCGM_FI_DEV_FB_USED",
+          "legendFormat": "{{node}} gpu{{gpu}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Inference Replicas (KEDA-scaled)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0 } },
+      "targets": [
+        {
+          "expr": "kube_deployment_status_replicas_available{deployment=\"vllm\", namespace=\"inference\"}",
+          "legendFormat": "available replicas"
+        },
+        {
+          "expr": "kube_deployment_spec_replicas{deployment=\"vllm\", namespace=\"inference\"}",
+          "legendFormat": "desired replicas"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "GPUs Allocated vs Capacity",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(kube_pod_container_resource_requests{resource=\"nvidia_com_gpu\"})",
+          "legendFormat": "requested"
+        },
+        {
+          "expr": "sum(kube_node_status_capacity{resource=\"nvidia_com_gpu\"})",
+          "legendFormat": "capacity"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Avg GPU Util (KEDA trigger, threshold 60)",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 60 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "avg(DCGM_FI_DEV_GPU_UTIL{exported_namespace=\"inference\"})",
+          "legendFormat": "avg util"
+        }
+      ]
+    }
+  ]
+}

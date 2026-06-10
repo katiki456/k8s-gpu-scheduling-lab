@@ -1,0 +1,21 @@
+# Scale the inference deployment on GPU utilization from DCGM metrics —
+# the signal that actually matters for inference capacity, not CPU.
+# When average GPU utilization across vllm pods exceeds 60%, add replicas
+# (each replica claims one GPU, so scaling out = claiming another GPU).
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vllm-gpu-scaler
+  namespace: inference
+spec:
+  scaleTargetRef:
+    name: vllm
+  minReplicaCount: 1
+  maxReplicaCount: 4
+  cooldownPeriod: 60
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+        query: avg(DCGM_FI_DEV_GPU_UTIL{exported_namespace="inference"})
+        threshold: "60"
