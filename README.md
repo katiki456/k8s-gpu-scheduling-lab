@@ -2,7 +2,7 @@
 
 A hands-on lab demonstrating **GPU-aware scheduling, autoscaling, and observability on Kubernetes** — the full path from a GPU node joining the cluster to an LLM inference workload (vLLM) being scheduled, monitored, and autoscaled on it.
 
-Built and documented by [Goutham Katikireddy](https://www.linkedin.com/in/goutham-katikireddy) as part of a public AI-infrastructure portfolio.
+Built and documented by [Goutham Katikireddy](https://github.com/katiki456) as part of a public AI-infrastructure portfolio.
 
 ## What this demonstrates
 
